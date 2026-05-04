@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Complaint Details</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 800px;
+            background: #fff;
+            margin: auto;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        h2 { text-align: center; color: #333; margin-bottom: 20px; }
+        .field {
+            margin-bottom: 15px;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        .label {
+            font-weight: bold;
+            color: #555;
+            display: block;
+            margin-bottom: 5px;
+        }
+        .value { color: #333; }
+        .status {
+            display: inline-block;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .status-PENDING     { background-color: #FFC107; color: #000; }
+        .status-IN_PROGRESS { background-color: #17A2B8; color: #FFF; }
+        .status-RESOLVED    { background-color: #28A745; color: #FFF; }
+        .status-REJECTED    { background-color: #DC3545; color: #FFF; }
+        .alert { padding: 15px; margin-bottom: 20px; border-radius: 4px; }
+        .alert-success {
+            background-color: #D4EDDA;
+            color: #155724;
+            border: 1px solid #C3E6CB;
+        }
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+        .btn-primary   { background-color: #007BFF; color: white; }
+        .btn-secondary { background-color: #6C757D; color: white; }
+        .btn-back {
+            background-color: #6C757D;
+            color: white;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 20px;
+            padding: 8px 16px;
+            border-radius: 4px;
+        }
+        .btn-back:hover { background-color: #545b62; }
+        select {
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #CED4DA;
+            width: 200px;
+        }
+        .image-preview {
+            max-width: 100%;
+            max-height: 300px;
+            margin-top: 10px;
+            border: 1px solid #ddd;
+            padding: 5px;
+        }
+        .no-recording { color: #6c757d; font-style: italic; }
+        .transcription-box {
+            background: #f0f7ff;
+            padding: 12px;
+            border-radius: 6px;
+            border-left: 4px solid #007BFF;
+            color: #333;
+            line-height: 1.6;
+        }
+        .meta-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0 20px;
+        }
+
+        /* ── NEW: Rejection reason block ── */
+        #rejection-reason-block {
+            display: none;          /* hidden by default; shown via JS when REJECTED is selected */
+            margin-top: 14px;
+            padding: 14px;
+            background: #fff5f5;
+            border: 1.5px solid #f5c2c7;
+            border-radius: 6px;
+            animation: fadeIn 0.25s ease;
+        }
+        #rejection-reason-block label {
+            font-weight: bold;
+            color: #842029;
+            display: block;
+            margin-bottom: 6px;
+        }
+        #rejection-reason-block textarea {
+            width: 100%;
+            min-height: 80px;
+            padding: 10px;
+            border: 1px solid #f5c2c7;
+            border-radius: 4px;
+            font-size: 0.95rem;
+            resize: vertical;
+            box-sizing: border-box;
+            font-family: inherit;
+        }
+        #rejection-reason-block textarea:focus {
+            outline: none;
+            border-color: #dc3545;
+            box-shadow: 0 0 5px rgba(220,53,69,0.25);
+        }
+        .rejection-hint {
+            font-size: 0.82rem;
+            color: #9e3a3a;
+            margin-top: 5px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-6px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <a href="/admin/dashboard" class="btn btn-back">← Back to Dashboard</a>
+
+    <h2>Complaint Details</h2>
+
+    <div th:if="${message}" class="alert alert-success" th:text="${message}"></div>
+
+    <div th:if="${report}">
+
+        <!-- ── Identity ──────────────────────────────────── -->
+        <div class="meta-grid">
+            <div class="field">
+                <span class="label">Complaint ID</span>
+                <span class="value" th:text="${report.id}"></span>
+            </div>
+            <div class="field">
+                <span class="label">Complaint Category</span>
+                <span class="value" th:text="${report.complaintCategory ?: '—'}"></span>
+            </div>
+        </div>
+
+        <div class="field">
+            <span class="label">Name</span>
+            <span class="value" th:text="${report.name}"></span>
+        </div>
+
+        <div class="meta-grid">
+            <div class="field">
+                <span class="label">Email</span>
+                <span class="value" th:text="${report.email ?: '—'}"></span>
+            </div>
+            <div class="field">
+                <span class="label">Phone</span>
+                <span class="value" th:text="${report.phone ?: '—'}"></span>
+            </div>
+        </div>
+
+        <div class="field">
+            <span class="label">Aadhaar</span>
+            <span class="value" th:text="${report.aadhaar ?: '—'}"></span>
+        </div>
+
+        <!-- ── Location ──────────────────────────────────── -->
+        <div class="meta-grid">
+            <div class="field">
+                <span class="label">State</span>
+                <span class="value" th:text="${report.state ?: '—'}"></span>
+            </div>
+            <div class="field">
+                <span class="label">District</span>
+                <span class="value" th:text="${report.district ?: '—'}"></span>
+            </div>
+        </div>
+
+        <div class="meta-grid">
+            <div class="field">
+                <span class="label">Taluk</span>
+                <span class="value" th:text="${report.taluk ?: '—'}"></span>
+            </div>
+            <div class="field">
+                <span class="label">Village</span>
+                <span class="value" th:text="${report.village ?: '—'}"></span>
+            </div>
+        </div>
+
+        <div class="meta-grid">
+            <div class="field">
+                <span class="label">Address</span>
+                <span class="value" th:text="${report.address ?: '—'}"></span>
+            </div>
+            <div class="field">
+                <span class="label">Pincode</span>
+                <span class="value" th:text="${report.pincode ?: '—'}"></span>
+            </div>
+        </div>
+
+        <!-- ── Problem ───────────────────────────────────── -->
+        <div class="field">
+            <span class="label">Problem Domain</span>
+            <span class="value" th:text="${report.problemDomain ?: '—'}"></span>
+        </div>
+
+        <div class="field">
+            <span class="label">Description</span>
+            <span class="value" th:text="${report.description ?: '—'}"></span>
+        </div>
+
+        <!-- ── Voice Transcription ── -->
+        <div class="field">
+            <span class="label">Voice Transcription</span>
+            <div th:if="${report.hasVoiceTranscription()}"
+                 th:text="${report.voiceTranscription}"
+                 class="transcription-box">
+            </div>
+            <span th:unless="${report.hasVoiceTranscription()}"
+                  class="no-recording">No voice transcription available</span>
+        </div>
+
+        <!-- ── Problem Image ── -->
+        <div class="field" th:if="${report.hasProblemImage()}">
+            <span class="label">Uploaded Image</span>
+            <img th:src="@{'data:image/jpeg;base64,' +
+                          ${T(java.util.Base64).getEncoder().encodeToString(report.problemImage)}}"
+                 class="image-preview" alt="Problem Image"/>
+        </div>
+
+        <!-- ── Timestamps & Status ───────────────────────── -->
+        <div class="meta-grid">
+            <div class="field">
+                <span class="label">Submitted On</span>
+                <span class="value" th:text="${report.timestamp}"></span>
+            </div>
+            <div class="field">
+                <span class="label">Action Taken / Rejection Reason</span>
+                <span class="value" th:text="${report.actionTaken ?: 'None yet'}"></span>
+            </div>
+        </div>
+
+        <div class="field">
+            <span class="label">Current Status</span>
+            <span class="status"
+                  th:classappend="${'status-' + report.status}"
+                  th:text="${report.status}"></span>
+        </div>
+
+        <!-- ── Update Status Form ────────────────────────── -->
+        <!--
+            BACKEND NOTE — In your AdminController (or wherever /admin/update-status/{id} is handled):
+                @PostMapping("/admin/update-status/{id}")
+                public String updateStatus(@PathVariable Long id,
+                                           @RequestParam String status,
+                                           @RequestParam(required = false) String actionTaken) {
+                    reportService.updateStatus(id, status, actionTaken);   // pass actionTaken
+                    ...
+                }
+
+            And in ReportServiceImpl.updateStatus(), also set report.setActionTaken(actionTaken).
+        -->
+        <form th:action="@{'/admin/update-status/' + ${report.id}}" method="post">
+            <div class="field">
+                <span class="label">Update Status</span>
+                <select name="status" id="statusSelect">
+                    <option value="PENDING"
+                            th:selected="${report.status == 'PENDING'}">Pending</option>
+                    <option value="IN_PROGRESS"
+                            th:selected="${report.status == 'IN_PROGRESS'}">In Progress</option>
+                    <option value="RESOLVED"
+                            th:selected="${report.status == 'RESOLVED'}">Resolved</option>
+                    <option value="REJECTED"
+                            th:selected="${report.status == 'REJECTED'}">Rejected</option>
+                </select>
+
+                <!-- Rejection reason — shown only when REJECTED is selected -->
+                <div id="rejection-reason-block">
+                    <label for="actionTaken">Reason for Rejection <span style="color:#dc3545;">*</span></label>
+                    <textarea id="actionTaken"
+                              name="actionTaken"
+                              placeholder="Briefly explain why this complaint is being rejected..."
+                              th:text="${report.actionTaken}"></textarea>
+                    <p class="rejection-hint">This reason will be visible to the citizen on their status page.</p>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary" id="updateBtn">Update Status</button>
+            <a href="/admin/dashboard" class="btn btn-secondary">Cancel</a>
+        </form>
+
+    </div>
+</div>
+
+<script>
+    // ── Back/Forward button security ──────────────────────────────
+    history.replaceState(null, '', window.location.href);
+    window.addEventListener('popstate', function () { window.location.replace('/login'); });
+    window.addEventListener('pageshow', function (e) { if (e.persisted) window.location.replace('/login'); });
+    // ─────────────────────────────────────────────────────────────
+
+    const statusSelect      = document.getElementById('statusSelect');
+    const rejectionBlock    = document.getElementById('rejection-reason-block');
+    const actionTakenField  = document.getElementById('actionTaken');
+
+    function toggleRejectionReason() {
+        const isRejected = statusSelect.value === 'REJECTED';
+        rejectionBlock.style.display = isRejected ? 'block' : 'none';
+        // Make the textarea required only when visible
+        actionTakenField.required = isRejected;
+    }
+
+    // Run on page load (in case the current status is already REJECTED)
+    toggleRejectionReason();
+
+    // Run whenever the admin changes the dropdown
+    statusSelect.addEventListener('change', toggleRejectionReason);
+
+    // Prevent submission if rejection reason is empty when REJECTED
+    document.querySelector('form').addEventListener('submit', function (e) {
+        if (statusSelect.value === 'REJECTED' && !actionTakenField.value.trim()) {
+            e.preventDefault();
+            actionTakenField.focus();
+            actionTakenField.style.borderColor = '#dc3545';
+            alert('Please provide a reason for rejection before saving.');
+        }
+    });
+</script>
+</body>
+</html>

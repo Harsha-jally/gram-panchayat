@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RuralFix | Karnataka</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;800&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+          --primary: #004aad;
+          --accent: #ffcc00;
+          --glass: rgba(255, 255, 255, 0.85);
+          --text: #1a1a1a;
+        }
+
+        * {
+          margin: 0;
+          padding: 0;
+          box-sizing: border-box;
+          scroll-behavior: smooth;
+        }
+
+        body {
+          font-family: 'Plus Jakarta Sans', sans-serif;
+          color: var(--text);
+          overflow-x: hidden;
+        }
+
+        /* Background */
+        .bg-video-fallback {
+          position: fixed;
+          inset: 0;
+          background: url('https://images.unsplash.com/photo-1589923188900-85dae523342b?auto=format&fit=crop&q=80&w=2000') center/cover no-repeat;
+          z-index: -2;
+        }
+
+        /* Navbar */
+        nav {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: 20px 8%;
+          background: var(--glass);
+          backdrop-filter: blur(12px);
+          position: sticky;
+          top: 0;
+          z-index: 1000;
+          box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+        }
+
+        .logo-box {
+          display: flex;
+          align-items: center;
+          gap: 12px;
+        }
+
+        .logo-img {
+          height: 45px;
+        }
+
+        .nav-links {
+          display: flex;
+          gap: 25px;
+          align-items: center;
+        }
+
+        .nav-links a {
+          text-decoration: none;
+          color: var(--text);
+          font-weight: 600;
+          position: relative;
+        }
+
+        .nav-links a::after {
+          content: "";
+          position: absolute;
+          width: 0%;
+          height: 2px;
+          background: var(--primary);
+          left: 0;
+          bottom: -4px;
+          transition: 0.3s;
+        }
+
+        .nav-links a:hover::after {
+          width: 100%;
+        }
+
+        .greeting-chip {
+          background: #e8f0fe;
+          color: var(--primary);
+          font-weight: 700;
+          padding: 8px 16px;
+          border-radius: 20px;
+        }
+
+        .btn-signout {
+          background: #ff4757;
+          color: white !important;
+          padding: 10px 18px;
+          border-radius: 8px;
+        }
+
+        /* Hero */
+        .hero {
+          height: 90vh;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          text-align: center;
+          position: relative;
+        }
+
+        .hero::before {
+          content: "";
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(135deg, rgba(0,74,173,0.7), rgba(0,0,0,0.5));
+        }
+
+        .hero-content {
+          position: relative;
+          color: white;
+          max-width: 700px;
+        }
+
+        .hero h1 {
+          font-size: 3.5rem;
+          font-weight: 800;
+        }
+
+        .hero p {
+          margin-top: 15px;
+          font-size: 1.2rem;
+          opacity: 0.9;
+        }
+
+        .hero-buttons {
+          margin-top: 30px;
+          display: flex;
+          gap: 20px;
+          justify-content: center;
+          flex-wrap: wrap;
+        }
+
+        .report-btn {
+          padding: 18px 40px;
+          background: var(--primary);
+          color: white;
+          border-radius: 12px;
+          font-weight: 700;
+          text-decoration: none;
+          transition: 0.3s;
+        }
+
+        .report-btn:hover {
+          transform: scale(1.05);
+        }
+
+        .secondary-btn {
+          padding: 18px 40px;
+          background: white;
+          color: var(--primary);
+          border-radius: 12px;
+          font-weight: 700;
+          text-decoration: none;
+        }
+
+        /* About Section */
+        #about {
+          padding: 80px 10%;
+          background: white;
+          border-radius: 50px 50px 0 0;
+          margin-top: -50px;
+        }
+
+        .section-title {
+          text-align: center;
+          font-size: 2.5rem;
+          color: var(--primary);
+          margin-bottom: 40px;
+        }
+
+        .card-grid {
+          display: grid;
+          grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+          gap: 30px;
+        }
+
+        .card {
+          background: white;
+          padding: 30px;
+          border-radius: 20px;
+          box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+          transition: 0.3s;
+        }
+
+        .card:hover {
+          transform: translateY(-10px);
+        }
+
+        .card h3 {
+          margin-bottom: 10px;
+          color: var(--primary);
+        }
+
+        /* Footer */
+        footer {
+          background: #1a1a1a;
+          color: white;
+          text-align: center;
+          padding: 40px;
+        }
+
+        footer p {
+          margin: 5px 0;
+        }
+
+        /* FAQ Section */
+        #faq {
+          padding: 80px 10%;
+          background: #f5f8ff;
+        }
+
+        .faq-subtitle {
+          text-align: center;
+          color: #666;
+          margin-top: -25px;
+          margin-bottom: 50px;
+          font-size: 1rem;
+        }
+
+        .faq-list {
+          max-width: 800px;
+          margin: 0 auto 50px auto;
+        }
+
+        .faq-item {
+          background: white;
+          border-radius: 14px;
+          margin-bottom: 14px;
+          box-shadow: 0 4px 20px rgba(0,74,173,0.07);
+          overflow: hidden;
+          border: 1px solid rgba(0,74,173,0.08);
+          transition: box-shadow 0.3s;
+        }
+
+        .faq-item:hover {
+          box-shadow: 0 8px 30px rgba(0,74,173,0.14);
+        }
+
+        .faq-question {
+          width: 100%;
+          background: none;
+          border: none;
+          padding: 22px 28px;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          cursor: pointer;
+          font-family: 'Plus Jakarta Sans', sans-serif;
+          font-size: 1rem;
+          font-weight: 600;
+          color: var(--text);
+          text-align: left;
+          gap: 16px;
+        }
+
+        .faq-question:hover {
+          color: var(--primary);
+        }
+
+        .faq-icon {
+          width: 30px;
+          height: 30px;
+          min-width: 30px;
+          border-radius: 50%;
+          background: #e8f0fe;
+          color: var(--primary);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 1.2rem;
+          font-weight: 700;
+          transition: transform 0.35s, background 0.3s;
+        }
+
+        .faq-item.open .faq-icon {
+          transform: rotate(45deg);
+          background: var(--primary);
+          color: white;
+        }
+
+        .faq-answer {
+          max-height: 0;
+          overflow: hidden;
+          transition: max-height 0.4s ease, padding 0.3s;
+          padding: 0 28px;
+        }
+
+        .faq-answer p {
+          padding-bottom: 22px;
+          color: #444;
+          line-height: 1.75;
+          font-size: 0.97rem;
+        }
+
+        .faq-item.open .faq-answer {
+          max-height: 300px;
+        }
+
+        /* Ask Ollama box */
+        .ollama-box {
+          max-width: 800px;
+          margin: 0 auto;
+          background: white;
+          border-radius: 20px;
+          padding: 36px;
+          box-shadow: 0 10px 40px rgba(0,74,173,0.10);
+          border: 1.5px solid rgba(0,74,173,0.12);
+        }
+
+        .ollama-box h3 {
+          color: var(--primary);
+          margin-bottom: 6px;
+          font-size: 1.2rem;
+        }
+
+        .ollama-box p.hint {
+          color: #888;
+          font-size: 0.85rem;
+          margin-bottom: 18px;
+        }
+
+        .ollama-input-row {
+          display: flex;
+          gap: 12px;
+          flex-wrap: wrap;
+        }
+
+        .ollama-input-row input {
+          flex: 1;
+          min-width: 200px;
+          padding: 14px 18px;
+          border: 1.5px solid #d0daf0;
+          border-radius: 10px;
+          font-family: 'Plus Jakarta Sans', sans-serif;
+          font-size: 0.95rem;
+          outline: none;
+          transition: border 0.2s;
+        }
+
+        .ollama-input-row input:focus {
+          border-color: var(--primary);
+        }
+
+        .ollama-ask-btn {
+          padding: 14px 28px;
+          background: var(--primary);
+          color: white;
+          border: none;
+          border-radius: 10px;
+          font-family: 'Plus Jakarta Sans', sans-serif;
+          font-weight: 700;
+          font-size: 0.95rem;
+          cursor: pointer;
+          transition: 0.2s;
+          white-space: nowrap;
+        }
+
+        .ollama-ask-btn:hover {
+          background: #0039a6;
+          transform: scale(1.03);
+        }
+
+        .ollama-ask-btn:disabled {
+          opacity: 0.6;
+          cursor: not-allowed;
+          transform: none;
+        }
+
+        .ollama-response {
+          margin-top: 20px;
+          background: #f5f8ff;
+          border-radius: 10px;
+          padding: 18px 20px;
+          color: #333;
+          font-size: 0.95rem;
+          line-height: 1.75;
+          display: none;
+          border-left: 4px solid var(--primary);
+        }
+
+        .ollama-response.visible {
+          display: block;
+          animation: fadeSlide 0.4s ease;
+        }
+
+        .ollama-response .typing-cursor {
+          display: inline-block;
+          width: 8px;
+          height: 15px;
+          background: var(--primary);
+          border-radius: 2px;
+          margin-left: 3px;
+          animation: blink 0.8s infinite;
+          vertical-align: middle;
+        }
+
+        .ollama-error {
+          margin-top: 16px;
+          color: #cc2200;
+          font-size: 0.88rem;
+          display: none;
+        }
+
+        .ollama-error.visible { display: block; }
+
+        @keyframes fadeSlide {
+          from { opacity: 0; transform: translateY(8px); }
+          to   { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes blink {
+          0%, 100% { opacity: 1; }
+          50%       { opacity: 0; }
+        }
+
+        /* Mobile */
+        @media (max-width: 768px) {
+          .hero h1 {
+            font-size: 2.3rem;
+          }
+
+          .nav-links {
+            gap: 15px;
+          }
+
+          .greeting-chip {
+            display: none;
+          }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="bg-video-fallback"></div>
+
+<!-- Navbar -->
+<nav>
+    <div class="logo-box">
+        <img th:src="@{/images/Karnatka-Gov-Logo.png}"
+             src="https://upload.wikimedia.org/wikipedia/commons/1/1a/Seal_of_Karnataka.svg"
+             class="logo-img">
+        <span style="font-weight: 800;">RuralFix</span>
+    </div>
+
+    <div class="nav-links">
+        <a href="#">Home</a>
+        <a th:href="@{/view-status}">View Status</a>
+        <a href="#about">About</a>
+        <a href="#faq">FAQ</a>
+
+        <span class="greeting-chip"
+              th:text="${'Hi, ' + loggedInName}"
+              th:if="${loggedInName != null}">
+            Hi, User
+        </span>
+
+        <a th:href="@{/logout}" class="btn-signout">Sign Out</a>
+    </div>
+</nav>
+
+<!-- Hero -->
+<section class="hero">
+    <div class="hero-content">
+        <h1>Fix Problems. Build Better Villages.</h1>
+        <p>Report issues instantly and track them with full transparency.</p>
+
+        <div class="hero-buttons">
+            <a th:href="@{/main}" class="report-btn">🚀 Report Issue</a>
+            <a th:href="@{/view-status}" class="secondary-btn">📍 Track Status</a>
+        </div>
+    </div>
+</section>
+
+<!-- About -->
+<section id="about">
+    <h2 class="section-title">What We Do</h2>
+
+    <div class="card-grid">
+        <div class="card">
+            <h3>📢 Easy Reporting</h3>
+            <p>Submit complaints like road damage, water issues, or electricity failures in seconds.</p>
+        </div>
+
+        <div class="card">
+            <h3>📊 Transparent Tracking</h3>
+            <p>Track complaint status with reasons and updates from authorities.</p>
+        </div>
+
+        <div class="card">
+            <h3>🤝 Direct Connection</h3>
+            <p>Connect citizens with government bodies for faster resolution.</p>
+        </div>
+    </div>
+</section>
+
+<!-- FAQ Section -->
+<section id="faq">
+    <h2 class="section-title">Frequently Asked Questions</h2>
+    <p class="faq-subtitle">Everything you need to know about using RuralFix</p>
+
+    <div class="faq-list">
+
+        <div class="faq-item">
+            <button class="faq-question">
+                What is RuralFix and who is it for?
+                <span class="faq-icon">+</span>
+            </button>
+            <div class="faq-answer">
+                <p>RuralFix is an online grievance portal built for rural citizens of Karnataka. It allows you to report civic issues — such as broken roads, water supply failures, or electricity outages — directly to the concerned government department, and track the resolution status in real time.</p>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <button class="faq-question">
+                What types of issues can I report?
+                <span class="faq-icon">+</span>
+            </button>
+            <div class="faq-answer">
+                <p>You can report a wide range of civic problems including: damaged or waterlogged roads, drinking water supply disruptions, street light failures, drainage blockages, public property damage, and other infrastructure-related issues affecting your village or gram panchayat.</p>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <button class="faq-question">
+                Do I need to create an account to report an issue?
+                <span class="faq-icon">+</span>
+            </button>
+            <div class="faq-answer">
+                <p>Yes, a registered account is required to submit complaints. This ensures accountability and allows you to receive updates on your complaint. Registration is free and takes less than a minute using your mobile number or email address.</p>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <button class="faq-question">
+                How do I track the status of my complaint?
+                <span class="faq-icon">+</span>
+            </button>
+            <div class="faq-answer">
+                <p>After logging in, click on <strong>"View Status"</strong> in the navigation bar. You will see all your submitted complaints along with their current status — Pending, In Progress, or Resolved — and any remarks added by the responsible authority.</p>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <button class="faq-question">
+                How long does it take for an issue to be resolved?
+                <span class="faq-icon">+</span>
+            </button>
+            <div class="faq-answer">
+                <p>Resolution time varies depending on the type and severity of the issue. Minor complaints such as street light repairs are typically addressed within 3–7 working days. Larger infrastructure problems may take longer. You will receive status updates at every stage of the process.</p>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <button class="faq-question">
+                Who reviews and acts on my complaint?
+                <span class="faq-icon">+</span>
+            </button>
+            <div class="faq-answer">
+                <p>Your complaint is routed to the relevant government department or gram panchayat officer based on the issue category and location. An assigned official reviews the complaint, takes action, and updates the status with a remark. This ensures complete transparency from submission to resolution.</p>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <button class="faq-question">
+                What if my complaint is not resolved or is incorrectly closed?
+                <span class="faq-icon">+</span>
+            </button>
+            <div class="faq-answer">
+                <p>If you feel your complaint was closed without proper resolution, you can escalate it through the portal. Persistent or unaddressed complaints are flagged for higher-level review to ensure no grievance goes unheard.</p>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <button class="faq-question">
+                Is RuralFix available in Kannada?
+                <span class="faq-icon">+</span>
+            </button>
+            <div class="faq-answer">
+                <p>We are actively working on full Kannada language support to ensure accessibility for all citizens across Karnataka. The platform currently supports English. A Kannada interface will be rolled out in an upcoming release.</p>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Ask Ollama -->
+    <div class="ollama-box">
+        <h3>🤖 Still have a question?</h3>
+        <div class="ollama-input-row">
+            <input type="text" id="ollamaInput" placeholder="e.g. How do I report a water supply problem?" />
+            <button class="ollama-ask-btn" id="ollamaBtn" onclick="askOllama()">Ask AI ✦</button>
+        </div>
+        <div class="ollama-response" id="ollamaResponse"></div>
+        <div class="ollama-error" id="ollamaError"></div>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer>
+    <p>© 2025 RuralFix | Government of Karnataka</p>
+    <p style="opacity:0.7;">Empowering rural citizens through technology</p>
+</footer>
+
+<script>
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            document.querySelector(this.getAttribute('href'))
+                .scrollIntoView({ behavior: 'smooth' });
+        });
+    });
+
+    // FAQ Accordion
+    document.querySelectorAll('.faq-question').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const item = btn.closest('.faq-item');
+            const isOpen = item.classList.contains('open');
+            document.querySelectorAll('.faq-item.open').forEach(el => el.classList.remove('open'));
+            if (!isOpen) item.classList.add('open');
+        });
+    });
+
+    // Ask AI — calls Spring backend /api/ask which does pgVector RAG + Mistral
+    async function askOllama() {
+        const input = document.getElementById('ollamaInput');
+        const btn = document.getElementById('ollamaBtn');
+        const responseBox = document.getElementById('ollamaResponse');
+        const errorBox = document.getElementById('ollamaError');
+        const question = input.value.trim();
+
+        if (!question) { input.focus(); return; }
+
+        btn.disabled = true;
+        btn.textContent = 'Thinking…';
+        errorBox.classList.remove('visible');
+        responseBox.innerHTML = '';
+        responseBox.classList.add('visible');
+
+        const cursor = document.createElement('span');
+        cursor.className = 'typing-cursor';
+        responseBox.appendChild(cursor);
+
+        try {
+            const res = await fetch('/api/ask', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ question })
+            });
+
+            if (!res.ok) throw new Error(`Server error ${res.status}`);
+
+            const reader = res.body.getReader();
+            const decoder = new TextDecoder();
+            let fullText = '';
+            let buffer = '';
+
+            while (true) {
+                const { value, done } = await reader.read();
+                if (done) break;
+
+                buffer += decoder.decode(value, { stream: true });
+                const lines = buffer.split('\n');
+                buffer = lines.pop();
+
+                for (const line of lines) {
+                    if (line.startsWith('event: done')) continue;
+                    if (line.startsWith('event: error')) {
+                        throw new Error('Backend error — check Ollama is running');
+                    }
+                    if (line.startsWith('data: ')) {
+                        const raw = line.slice(6).trim();
+                        if (!raw || raw === '{}') continue;
+                        try {
+                            fullText += JSON.parse(raw);
+                            responseBox.innerHTML = fullText;
+                            responseBox.appendChild(cursor);
+                        } catch {}
+                    }
+                }
+            }
+
+            responseBox.innerHTML = fullText || '(No response)';
+
+        } catch (err) {
+            responseBox.classList.remove('visible');
+            errorBox.textContent = '⚠️ ' + (err.message || 'Could not connect to server.');
+            errorBox.classList.add('visible');
+        } finally {
+            btn.disabled = false;
+            btn.textContent = 'Ask AI ✦';
+        }
+    }
+
+    document.getElementById('ollamaInput').addEventListener('keydown', e => {
+        if (e.key === 'Enter') askOllama();
+    });
+
+    window.addEventListener('popstate', function () {
+        window.location.replace('/login');
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>My Complaint Status</title>
+    <style>
+        body {
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #eef2ff, #f9fbff);
+    margin: 0;
+    padding: 20px;
+}
+
+.container {
+    max-width: 900px;
+    margin: auto;
+}
+
+/* Title */
+h2 {
+    text-align: center;
+    color: #5a8dee;
+    margin-bottom: 25px;
+}
+
+/* Card */
+.card {
+    background: rgba(255,255,255,0.8);
+    backdrop-filter: blur(8px);
+    padding: 20px;
+    margin-bottom: 18px;
+    border-radius: 14px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+    transition: 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-3px);
+}
+
+/* Labels */
+.label {
+    font-weight: 600;
+    color: #444;
+}
+
+/* Status Badge */
+.status-badge {
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+/* Softer Colors */
+.PENDING     { background: #fff3bf; color: #e67700; }
+.IN_PROGRESS { background: #d0ebff; color: #1971c2; }
+.RESOLVED    { background: #d3f9d8; color: #2b8a3e; }
+.REJECTED    { background: #ffe3e3; color: #c92a2a; }
+
+/* Rejection box */
+.rejection-box {
+    margin-top: 12px;
+    padding: 12px;
+    background: #fff5f5;
+    border-left: 4px solid #ff6b6b;
+    border-radius: 6px;
+}
+
+/* Buttons */
+.btn-submit-again {
+    display: inline-block;
+    margin-top: 12px;
+    padding: 8px 18px;
+    background: #5a8dee;
+    color: white;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 0.85rem;
+    transition: 0.2s;
+}
+
+.btn-submit-again:hover {
+    background: #3b6eea;
+}
+
+/* Back link */
+.back-link {
+    color: #5a8dee;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.back-link:hover {
+    text-decoration: underline;
+}
+
+/* Timestamp */
+.timestamp {
+    font-size: 0.8rem;
+    color: #888;
+}
+
+/* Empty */
+.empty {
+    text-align: center;
+    padding: 40px;
+    color: #888;
+}
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <a th:href="@{/index}" href="index.html" class="back-link">← Back to Home</a>
+
+    <h2>My Complaints</h2>
+
+    <!-- No complaints -->
+    <div th:if="${#lists.isEmpty(reports)}" class="empty">
+        <p>You have not submitted any complaints yet.</p>
+        <a th:href="@{/main}" href="main.html" class="btn-submit-again">Submit a Complaint</a>
+    </div>
+
+    <!-- Complaint cards — one per report belonging to this user -->
+    <div th:each="report : ${reports}" class="card">
+
+        <p>
+            <span class="label">Complaint ID: </span>
+            <span th:text="${report.id}"></span>
+        </p>
+
+        <p>
+            <span class="label">Category: </span>
+            <span th:text="${report.complaintCategory ?: '—'}"></span>
+        </p>
+
+        <p>
+            <span class="label">Problem: </span>
+            <span th:text="${report.problemDomain ?: '—'}"></span>
+        </p>
+
+        <p>
+            <span class="label">Status: </span>
+            <span class="status-badge"
+                  th:classappend="${report.status}"
+                  th:text="${report.status}">
+            </span>
+        </p>
+
+        <!-- Show rejection reason prominently only when REJECTED -->
+        <div th:if="${report.status == 'REJECTED'}" class="rejection-box">
+            <strong>Reason for Rejection:</strong>
+            <span th:text="${report.actionTaken ?: 'No reason provided by admin.'}"></span>
+        </div>
+
+        <!-- For non-rejected resolved/in-progress, show action taken normally -->
+        <p th:unless="${report.status == 'REJECTED'}">
+            <span class="label">Action Taken: </span>
+            <span th:text="${report.actionTaken ?: 'No update yet'}"></span>
+        </p>
+
+        <p class="timestamp">
+            <span class="label">Submitted On: </span>
+            <span th:text="${report.timestamp}"></span>
+        </p>
+
+        <a th:if="${report.status == 'REJECTED'}"
+           th:href="@{/main}"
+           href="main.html"
+           class="btn-submit-again">
+            🔄 Submit Again
+        </a>
+
+    </div>
+
+</div>
+
+<script>
+    // ── Back/Forward button security ──────────────────────────────
+    history.replaceState(null, '', window.location.href);
+    window.addEventListener('popstate', function () { window.location.replace('/login'); });
+    window.addEventListener('pageshow', function (e) { if (e.persisted) window.location.replace('/login'); });
+    // ─────────────────────────────────────────────────────────────
+</script>
+
+</body>
+</html>

@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Admin Dashboard</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        :root {
+    --primary: #5a8dee;
+    --primary-soft: #eef3ff;
+    --danger: #ff6b6b;
+    --success: #51cf66;
+    --warning: #fcc419;
+    --text-dark: #2d2d2d;
+    --text-light: #6c757d;
+    --border: #e9ecef;
+    --bg: #f6f9fc;
+    --card-bg: rgba(255, 255, 255, 0.75);
+    --radius: 12px;
+    --shadow: 0 8px 20px rgba(0,0,0,0.05);
+}
+
+body {
+    background: linear-gradient(135deg, #eef2ff, #f8fbff);
+    color: var(--text-dark);
+    padding: 2rem;
+}
+
+/* Container */
+.container {
+    max-width: 1200px;
+    margin: auto;
+}
+
+/* Header */
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+h1 {
+    font-size: 1.8rem;
+    color: var(--primary);
+}
+
+/* Logout Button */
+.logout-btn {
+    padding: 0.6rem 1.2rem;
+    background: linear-gradient(135deg, #ff6b6b, #ff8787);
+    border: none;
+    border-radius: var(--radius);
+    color: white;
+    cursor: pointer;
+    font-weight: 500;
+    box-shadow: var(--shadow);
+    transition: 0.3s;
+}
+
+.logout-btn:hover {
+    transform: translateY(-2px);
+}
+
+/* Table Card */
+.table-container {
+    background: var(--card-bg);
+    backdrop-filter: blur(10px);
+    border-radius: var(--radius);
+    padding: 1.5rem;
+    box-shadow: var(--shadow);
+}
+
+/* Table */
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th {
+    background: var(--primary-soft);
+    color: var(--primary);
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+th, td {
+    padding: 1rem;
+    border-bottom: 1px solid var(--border);
+}
+
+/* Rows */
+tr:hover {
+    background: #f1f5ff;
+    transition: 0.2s;
+}
+
+/* Status Pills */
+.status {
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
+.status-pending {
+    background: #fff3bf;
+    color: #e67700;
+}
+
+.status-resolved {
+    background: #d3f9d8;
+    color: #2b8a3e;
+}
+
+.status-in-progress {
+    background: #d0ebff;
+    color: #1971c2;
+}
+
+/* Action Button */
+.action-btn {
+    padding: 6px 14px;
+    border-radius: 8px;
+    background: var(--primary);
+    color: white;
+    font-size: 0.8rem;
+    text-decoration: none;
+    transition: 0.2s;
+}
+
+.action-btn:hover {
+    background: #3b6eea;
+}
+
+/* Empty */
+.empty-state {
+    text-align: center;
+    padding: 2rem;
+    color: var(--text-light);
+}
+    </style>
+    <script>
+        // Replace current entry — removes login from history so back arrow grays out
+        history.replaceState(null, '', window.location.href);
+
+        // Block back/forward button attempts
+        window.addEventListener('popstate', function () {
+            window.location.replace('/login');
+        });
+
+        // Block bfcache — when browser serves page from cache (back/forward cache)
+        window.addEventListener('pageshow', function (e) {
+            if (e.persisted) {
+                window.location.replace('/login');
+            }
+        });
+    </script>
+</head>
+<body>
+<div class="container">
+    <header>
+        <h1>Complaint Reports Dashboard</h1>
+        <form th:action="@{/logout}" method="post">
+            <button type="submit" class="logout-btn">Logout</button>
+        </form>
+    </header>
+
+    <div class="table-container">
+        <table>
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th> </th>
+                <th> </th>
+                <th>Status</th>
+                <th> </th>
+                <th>Timestamp</th>
+                <th>Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:if="${reports == null || reports.isEmpty()}">
+                <td colspan="5" class="empty-state">No reports found</td>
+            </tr>
+            <tr th:each="report : ${reports}">
+                <td th:text="${report.id}"></td>
+
+                <td th:text="${report.problemDomain}"></td>
+
+                <td>
+            <span th:classappend="${report.status == 'PENDING'} ? 'status status-pending' :
+                              (${report.status == 'RESOLVED'} ? 'status status-resolved' :
+                              'status status-in-progress')"
+                  th:text="${report.status}">
+            </span>
+                </td>
+
+                <td th:text="${report.actionTaken ?: 'No action yet'}"></td>
+
+                <td th:text="${report.timestamp}"></td>
+
+                <td>
+                    <a th:href="@{'/admin/report/' + ${report.id}}" class="action-btn">View Details</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+</body>
+</html>

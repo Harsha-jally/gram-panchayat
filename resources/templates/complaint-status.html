@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Complaint Status</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        :root {
+            --primary-color: #4361ee;
+            --success-color: #2b9348;
+            --text-color: #333;
+            --light-bg: #f8f9fa;
+            --box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--light-bg);
+            color: var(--text-color);
+            line-height: 1.6;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        .status-container {
+            background: white;
+            border-radius: 12px;
+            padding: 3rem;
+            box-shadow: var(--box-shadow);
+            max-width: 600px;
+            width: 100%;
+            margin: 0 auto;
+            transition: transform 0.3s ease;
+        }
+
+        .status-container:hover {
+            transform: translateY(-5px);
+        }
+
+        h1 {
+            color: var(--success-color);
+            margin-bottom: 1.5rem;
+            font-size: 2rem;
+            font-weight: 600;
+        }
+
+        p {
+            margin-bottom: 2rem;
+            font-size: 1.1rem;
+            color: #555;
+        }
+
+        .success-icon {
+            font-size: 4rem;
+            color: var(--success-color);
+            margin-bottom: 1.5rem;
+            animation: bounce 1s ease;
+        }
+
+        .home-link {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background-color: var(--primary-color);
+            color: white;
+            text-decoration: none;
+            border-radius: 6px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .home-link:hover {
+            background-color: white;
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
+            40% {transform: translateY(-20px);}
+            60% {transform: translateY(-10px);}
+        }
+
+        @media (max-width: 600px) {
+            .status-container {
+                padding: 2rem 1.5rem;
+            }
+
+            h1 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+<div class="status-container">
+    <div class="success-icon">✓</div>
+    <h1>Your complaint has been submitted successfully!</h1>
+    <p>We have received your complaint and will process it shortly. You'll receive updates on the registered email address.</p>
+    <a th:href="@{/index}" class="home-link">Return to Home</a>
+</div>
+</body>
+</html>
